@@ -3,17 +3,14 @@ import Github from "next-auth/providers/github";
 
 import type { NextAuthConfig } from "next-auth";
 
-export const config = {
-  theme: {
-    logo: "https://next-auth.js.org/img/logo/logo-sm.png",
-  },
-  providers: [Github],
+export const config: NextAuthConfig = {
+  providers: [Github({ clientId: process.env.AUTH_GITHUB_ID, clientSecret: process.env.AUTH_GITHUB_SECRET, })],
   basePath: "/api/auth",
   callbacks: {
     authorized({ request, auth }) {
       try {
         const { pathname } = request.nextUrl;
-        if (pathname === "/server-example") return !!auth; //ログインしているユーザーだけ見れるページだよ。
+        if (pathname === "/protected-page") return !!auth; //ログインしているユーザーだけ見れるページだよ。
         return true; //ログインしてなくても取りあえず全ページ見れるよ。
       } catch (err) {
         console.log(err);
@@ -25,6 +22,6 @@ export const config = {
       return token;
     },
   },
-} satisfies NextAuthConfig;
+};
 
 export const { handlers, auth, signIn, signOut } = NextAuth(config);
